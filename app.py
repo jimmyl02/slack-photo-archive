@@ -191,6 +191,7 @@ slack bot handlers
 '''
 @app.event("message")
 def handle_message_events(event, say):
+    print(event)
     if "files" in event:
         # this message event uploaded a file, we mark this and wish to save it
         for file in event["files"]:
@@ -201,6 +202,8 @@ def handle_message_events(event, say):
             
             if r.status_code == 200:
                 upload_photo_to_album(r.content)
+            else:
+                print('[!] failed to get image from slack', r.content)
 
         say(text="saved files to google photos album :camera:", thread_ts=event["event_ts"])
 

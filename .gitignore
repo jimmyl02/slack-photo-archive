@@ -1,6 +1,7 @@
 # Custom files
 venv/
 credentials.json
+creds.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
