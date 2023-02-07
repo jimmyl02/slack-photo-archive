@@ -219,8 +219,11 @@ def handle_message_events(event, say):
 if __name__ == "__main__":
     # check if token is already saved
     saved_creds = None
-    with open("savedcreds.json", "r") as creds:
-        saved_creds = json.load(creds)
+    try:
+        with open("savedcreds.json", "r") as creds:
+            saved_creds = json.load(creds)
+    except:
+        print("[*] Failed to read saved credentials")
 
     if saved_creds:
         print("[*] Using previously saved user credentials")
