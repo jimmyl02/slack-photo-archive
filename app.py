@@ -144,7 +144,7 @@ def ensure_album_created():
         print(r.content)
         print("[!] WARNING: something went wrong while retriving albums")
 
-def upload_photo_to_album(photo_data, depth=0):
+def upload_photo_to_album(photo_data, message, depth=0):
     global google_photos_refresh_token
 
     # set recursive limit
@@ -168,7 +168,7 @@ def upload_photo_to_album(photo_data, depth=0):
         # TODO: if this fails, use refresh token and try again
         print("[!] WARNING: something went wrong with uploading the photo, retrying with token refresh")
         google_photos_api_refresh_token()
-        upload_photo_to_album(photo_data, depth=depth+1)
+        upload_photo_to_album(photo_data, message, depth=depth+1)
 
     # create media item
     headers = {
@@ -179,7 +179,7 @@ def upload_photo_to_album(photo_data, depth=0):
     body = {
         "albumId": google_photos_album_id,
         "newMediaItems": [{
-            "description": "slack photo upload",
+            "description": "funtimes: " + message,
             "simpleMediaItem": {
                 "fileName": str(uuid.uuid4()),
                 "uploadToken": photo_token
@@ -209,7 +209,7 @@ def handle_message_events(event, say):
             r = requests.get(file_download_url, headers=headers)
             
             if r.status_code == 200:
-                upload_photo_to_album(r.content)
+                upload_photo_to_album(r.content, event["message"])
             else:
                 print('[!] failed to get image from slack', r.content)
 
