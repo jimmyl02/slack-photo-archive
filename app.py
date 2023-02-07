@@ -19,7 +19,7 @@ with open("credentials.json", "r") as f:
 google_photos_auth_token = None
 google_photos_refresh_token = None
 
-google_photos_album_name = "[FA22] Slack Archives"
+google_photos_album_name = "[SP23] Slack Archives"
 google_photos_album_id = None
 
 # initialize app
@@ -69,6 +69,14 @@ def google_photos_api_oauth_token(code):
             print("[!] WARNING: no refresh token, try removing the slack-photo-archive app from authorized google apps")
 
         print("[*] authentication successful")
+
+        print("[*] saving credentials...")
+        with open("savedcreds.json", "w") as creds:
+            json.dump({
+                "auth_token": google_photos_auth_token,
+                "refresh_token": google_photos_refresh_token
+            }, creds)
+        print("[*] successfully saved credentials")
     else:
         print("[!] FATAL: something went wrong with getting authentication token")
         sys.exit("authentication error")
@@ -209,14 +217,24 @@ def handle_message_events(event, say):
 
 # start the app
 if __name__ == "__main__":
-    # authenticate user to google photos
-    print("[*] Visit the following link and grant permissions")
-    google_photos_api_oauth()
+    # check if token is already saved
+    saved_creds = None
+    with open("savedcreds.json", "r") as creds:
+        saved_creds = json.load(creds)
 
-    print("[*] Copy the code parameter from the http request")
-    code = input("Code: ")
+    if saved_creds:
+        print("[*] Using previously saved user credentials")
+        google_photos_auth_token = saved_creds["auth_token"]
+        google_photos_refresh_token = saved_creds["refresh_token"]
+    else:
+        # authenticate user to google photos
+        print("[*] Visit the following link and grant permissions")
+        google_photos_api_oauth()
 
-    google_photos_api_oauth_token(code)
+        print("[*] Copy the code parameter from the http request")
+        code = input("Code: ")
+
+        google_photos_api_oauth_token(code)
 
     # ensure album is created with name; NOTE: we can only add photos to album created via API
     ensure_album_created()
