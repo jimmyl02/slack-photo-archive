@@ -209,7 +209,7 @@ def handle_message_events(event, say):
             r = requests.get(file_download_url, headers=headers)
             
             if r.status_code == 200:
-                upload_photo_to_album(r.content, event["message"])
+                upload_photo_to_album(r.content, event["text"])
             else:
                 print('[!] failed to get image from slack', r.content)
 
