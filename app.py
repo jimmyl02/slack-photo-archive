@@ -213,7 +213,8 @@ def handle_message_events(event, say):
             else:
                 print('[!] failed to get image from slack', r.content)
 
-        say(text="saved files to google photos album :camera:", thread_ts=event["event_ts"])
+        app.client.reactions_add(name="camera", channel=event["channel"], timestamp=event["ts"])
+
 
 # start the app
 if __name__ == "__main__":
