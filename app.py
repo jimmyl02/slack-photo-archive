@@ -164,35 +164,35 @@ def upload_photo_to_album(photo_data, message, depth=0):
     r = requests.post("https://photoslibrary.googleapis.com/v1/uploads", headers=headers, data=photo_data)
     if r.status_code == 200:
         photo_token = r.text
+
+        # create media item
+        headers = {
+            "Content-type": "application/json",
+            "Authorization": "Bearer " + google_photos_auth_token,
+        }
+
+        body = {
+            "albumId": google_photos_album_id,
+            "newMediaItems": [{
+                "description": "funtimes: " + message,
+                "simpleMediaItem": {
+                    "fileName": str(uuid.uuid4()),
+                    "uploadToken": photo_token
+                }
+            }]
+        }
+        r = requests.post("https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate", headers=headers, json=body)
+        
+        # TODO: debug
+        print(r.content)
+
+        if r.status_code != 200:
+            print("[!] WARNING: failed add media to album")
     else:
         # TODO: if this fails, use refresh token and try again
         print("[!] WARNING: something went wrong with uploading the photo, retrying with token refresh")
         google_photos_api_refresh_token()
         upload_photo_to_album(photo_data, message, depth=depth+1)
-
-    # create media item
-    headers = {
-        "Content-type": "application/json",
-        "Authorization": "Bearer " + google_photos_auth_token,
-    }
-
-    body = {
-        "albumId": google_photos_album_id,
-        "newMediaItems": [{
-            "description": "funtimes: " + message,
-            "simpleMediaItem": {
-                "fileName": str(uuid.uuid4()),
-                "uploadToken": photo_token
-            }
-        }]
-    }
-    r = requests.post("https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate", headers=headers, json=body)
-    
-    # TODO: debug
-    print(r.content)
-
-    if r.status_code != 200:
-        print("[!] WARNING: failed add media to album")
 
 '''
 slack bot handlers
