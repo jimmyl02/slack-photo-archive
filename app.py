@@ -123,6 +123,7 @@ def ensure_album_created():
                 if album["title"] == google_photos_album_name:
                     found = True
                     google_photos_album_id = album["id"]
+                    print("[*] found google photos album")
                     break
 
         if not found:
@@ -229,6 +230,9 @@ if __name__ == "__main__":
         print("[*] Using previously saved user credentials")
         google_photos_auth_token = saved_creds["auth_token"]
         google_photos_refresh_token = saved_creds["refresh_token"]
+
+        # if using saved credentials, refresh the token
+        google_photos_api_refresh_token()
     else:
         # authenticate user to google photos
         print("[*] Visit the following link and grant permissions")
